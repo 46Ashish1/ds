@@ -1,380 +1,235 @@
 #include <iostream>
 using namespace std;
-template <class T>
 class Node
 {
 public:
-    T info;
+    int data;
     Node *prev;
     Node *next;
 };
-template <class T>
-class DoublyLinkedList
+void printList(Node *head)
 {
-protected:
-    Node<T> *head, *tail;
+    Node *n = head;
+    while (n != NULL)
+    {
+        cout << n->data << " ";
+        n = n->next;
+    }
+    cout << endl;
+}
+void insertBeginning(Node *head)
+{
+    int x;
+    cout << "Enter the element to insert at beginning : ";
+    cin >> x;
+    Node *temp = new Node();
+    temp->data = x;
+    temp->prev = NULL;
+    temp->next = head;
+    head = temp;
 
-public:
-    // Constructor
-    DoublyLinkedList()
-    {
-        head = tail = NULL;
-    }
-    // Destructor
-    ~DoublyLinkedList()
-    {
-        if (this->isEmpty())
-            return;
-        Node<T> *ptr;
-        for (; !isEmpty();)
-        {
-            ptr = head->next;
-            delete head;
-            head = ptr;
-        }
-        head = tail = ptr;
-        return;
-    }
-    // Checks if the list is empty - O(1)
-    bool isEmpty()
-    {
-        return (head == NULL || tail == NULL);
-    }
-    // Inserts a node at the beginning - O(1)
-    void insertFront(T info)
-    {
-        Node<T> *temp = new Node<T>();
-        temp->info = info;
-        temp->next = head;
-        temp->prev = NULL;
-        if (this->isEmpty())
-            tail = temp;
-        else
-            head->prev = temp;
-        head = temp;
-        cout << "Inserted " << info << " at front...";
-        this->display();
-        return;
-    }
-    // Inserts a node at a specified location - O(n)
-    void insertAtLoc(int loc, T info)
-    {
-        if (loc == 1)
-        {
-            this->insertFront(info);
-            return;
-        }
-        Node<T> *temp = head;
-        for (int i = 1; temp != NULL && i < loc - 1; i++)
-            temp = temp->next;
-        if (temp == NULL)
-        {
-            cout << "Invalid location...\n";
-            return;
-        }
-        if (temp == tail)
-        {
-            this->insertBack(info);
-            return;
-        }
-        Node<T> *node = new Node<T>();
-        node->info = info;
-        node->next = temp->next;
-        node->prev = temp;
-        temp->next->prev = node;
-        temp->next = node;
-        cout << "Inserted node " << info << " at location " << loc << "...";
-        this->display();
-        return;
-    }
-    // Inserts a node at the end - O(1)
-    void insertBack(T info)
-    {
-        Node<T> *temp = new Node<T>();
-        temp->info = info;
-        temp->next = NULL;
-        temp->prev = tail;
-        if (this->isEmpty())
-            head = tail = temp;
-        else
-            tail->next = temp;
-        tail = temp;
-        cout << "Inserted " << info << " at back...";
-        this->display();
-        return;
-    }
-    // Removes a node from the beginning - O(1)
-    void deleteFront()
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return;
-        }
-        Node<T> *temp = head;
-        head = temp->next;
-        if (this->isEmpty())
-            tail = NULL;
-        else
-            head->prev = NULL;
-        delete temp;
-        cout << "\nDeleted node at front...";
-        this->display();
-        return;
-    }
-    // Removes a node at a specified location - O(n)
-    void deleteAtLoc(int loc)
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return;
-        }
-        if (loc == 1)
-        {
-            this->deleteFront();
-            return;
-        }
-        Node<T> *node, *temp = head;
-        for (int i = 1; temp != NULL && i < loc - 1; i++)
-            temp = temp->next;
-        if (temp == NULL || temp->next == NULL)
-        {
-            cout << "Invalid location...\n";
-            return;
-        }
-        if (temp->next == tail)
-        {
-            this->deleteBack();
-            return;
-        }
-        node = temp->next->next;
-        node->prev = temp;
-        delete temp->next;
-        temp->next = node;
-        cout << "Deleted node "
-             << "at location " << loc << "...";
-        this->display();
-        return;
-    }
-    // Removes a node at the end - O(1)
-    void deleteBack()
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return;
-        }
-        Node<T> *temp = tail;
-        tail = temp->prev;
-        if (this->isEmpty())
-            head = NULL;
-        else
-            tail->next = NULL;
-        delete temp;
-        cout << "\nDeleted node at back...";
-        this->display();
-        return;
-    }
-    // Reverses the linked list - O(n)
-    void reverse()
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return;
-        }
-        Node<T> *temp = head,
-                *temp1 = NULL;
-        tail = temp;
-        while (temp != NULL)
-        {
-            temp1 = temp->prev;
-            temp->prev = temp->next;
-            temp->next = temp1;
-            temp = temp->prev;
-        }
-        if (temp1 != NULL)
-            head = temp1->prev;
-        cout << "\nList reversed...";
-        this->display();
-        return;
-    }
-    // Concatenates two lists - O(n)
-    void concat(DoublyLinkedList<T> &list)
-    {
-        if (!list.isEmpty() && !this->isEmpty())
-        {
-            Node<T> *node,
-                *temp = tail,
-                *temp1 = list.head;
-            while (temp1 != NULL)
-            {
-                node = new Node<T>();
-                node->info = temp1->info;
-                node->next = NULL;
-                node->prev = temp;
-                temp->next = node;
-                temp = temp->next;
-                temp1 = temp1->next;
-            }
-            tail = node;
-            cout << "Concatenated two lists...\n";
-            this->display();
-        }
-        else
-            cout << "\nOne of the lists is empty...\n";
-        return;
-    }
-    // Overloads the + operator - O(n)
-    void operator+(DoublyLinkedList<T> &list)
-    {
-        this->concat(list);
-        return;
-    }
-    // Searches for an element - O(n)
-    Node<T> *search(T ele)
-    {
-        if (this->isEmpty())
-            return nullptr;
-        Node<T> *temp = head;
-        while (temp != NULL)
-        {
-            if (temp->info == ele)
-                return temp;
-            temp = temp->next;
-        }
-        return nullptr;
-    }
-    // Calculates the number of nodes - O(n)
-    int count()
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return -1;
-        }
-        int count = 0;
-        Node<T> *temp;
-        for (temp = head; temp != NULL;
-             temp = temp->next, count++)
-            ;
-        return count;
-    }
-    void getch()
-    {
-        cout << "\nPress any key to continue...";
-        cin.ignore();
-        cin.get();
-        return;
-    }
-    // Traverses the list and prints all nodes - O(n)
-    void display()
-    {
-        if (this->isEmpty())
-        {
-            cout << "\nList is empty...\n";
-            return;
-        }
-        Node<T> *temp = head;
-        cout << "\nList: ";
-        while (temp->next != NULL)
-        {
-            cout << temp->info << " -> ";
-            temp = temp->next;
-        }
-        cout << temp->info << endl;
-        return;
-    }
-};
-int main(void)
+    printList(head);
+}
+void insertPosition(Node *head)
 {
-    int info, ele, choice, loc, count;
-    DoublyLinkedList<int> list, list2;
-    do
+    int x;
+    int pos;
+    cout << "Enter the element to be inserted : ";
+    cin >> x;
+    cout << "Enter the position : ";
+    cin >> pos;
+    Node *n = head;
+    for (int i = 0; i < pos; i++)
     {
-        cout << "\tDoubly Linked List\n"
-             << "===================================\n"
-             << " (1) Search (2) InsertFront\n"
-             << " (3) InsertBack (4) InsertAtLoc\n"
-             << " (5) DeleteFront (6) DeleteBack\n"
-             << " (7) DeleteAtLoc (8) Display\n"
-             << " (9) Count (10) Reverse\n"
-             << " (11) Concat (0) Exit\n\n";
-        cout << "Enter Choice: ";
+        n = n->next;
+    }
+    Node *nyu = new Node();
+    Node *temp = n->prev;
+    nyu->data = x;
+    nyu->next = n;
+    nyu->prev = temp;
+    temp->next = nyu;
+    n->prev = nyu;
+    printList(head);
+}
+void insertEnd(Node *head)
+{
+    int x;
+    Node *n = head;
+    Node *last = new Node();
+
+    cout << "Enter the element to insert at end : ";
+    cin >> x;
+    last->data = x;
+    last->next = NULL;
+    Node *temp = NULL;
+    while (n != NULL)
+    {
+        temp = n;
+        n = n->next;
+    }
+    last->prev = temp;
+    temp->next = last;
+    printList(head);
+}
+void deleteBeginning(Node *head)
+{
+    Node *temp = head;
+    head = head->next;
+    head->prev = NULL;
+    free(temp);
+    printList(head);
+}
+void deletePosition(Node *head)
+{
+    int pos;
+    cout << "Enter the position : ";
+
+    cin >> pos;
+    Node *n = head;
+    for (int i = 0; i < pos; i++)
+    {
+        n = n->next;
+    }
+    Node *rev = n->prev;
+    rev->next = n->next;
+    n->next->prev = rev;
+    free(n);
+    printList(head);
+}
+void deleteEnd(Node *head)
+{
+    Node *n = head;
+    Node *rev = NULL;
+    while (n != NULL)
+    {
+        rev = n;
+        n = n->next;
+    }
+    rev->prev->next = NULL;
+    free(rev);
+    printList(head);
+}
+Node *searchElement(Node *head)
+{
+    int x;
+    cout << "Enter the element to search for : ";
+    cin >> x;
+    Node *n = head;
+    while (n->data != x && n->next != NULL)
+    {
+        n = n->next;
+    }
+    return n;
+}
+void concatenate(Node *head, Node *head2)
+{
+    Node *n = head;
+    Node *temp = NULL;
+    while (n != NULL)
+    {
+        temp = n;
+        n = n->next;
+    }
+    temp->next = head2;
+    head2->prev = temp;
+    printList(head);
+}
+int main()
+{
+    // linked list 1
+    Node *head = NULL;
+    Node *second = NULL;
+    Node *third = NULL;
+    Node *fourth = NULL;
+    Node *fifth = NULL;
+
+    head = new Node();
+    second = new Node();
+    third = new Node();
+    fourth = new Node();
+    fifth = new Node();
+    head->data = 1;
+    head->prev = NULL;
+    head->next = second;
+    second->data = 2;
+    second->prev = head;
+    second->next = third;
+    third->data = 3;
+    third->prev = second;
+    third->next = fourth;
+
+    fourth->data = 4;
+    fourth->prev = third;
+    fourth->next = fifth;
+    fifth->data = 5;
+    fifth->prev = fourth;
+    fifth->next = NULL;
+
+    // linked list 2
+    Node *list1 = new Node();
+    Node *list2 = new Node();
+    Node *list3 = new Node();
+
+    list1->data = 6;
+    list1->prev = NULL;
+    list1->next = list2;
+
+    list2->data = 7;
+    list2->prev = list1;
+    list2->next = list3;
+
+    list3->data = 8;
+    list3->prev = list2;
+    list3->next = NULL;
+
+    printList(head);
+    int choice = 1;
+    while (choice != 0)
+    {
+        cout << "1. Insert an element x at the beginning of the doubly linked list "<<endl;
+        cout << "2. Insert an element x at ith position in the doubly linked list "<<endl;
+        cout<< "3. Insert an element x at the end of doubly linked list "<<endl;
+        cout<< "4. Remove an element from the beginning of the doubly linked list "<<endl;
+        cout<< "5. Remove an element from ith position in the doubly linked list."<<endl;
+        cout<< "6. Remove an element from the end of the doubly linked list "<<endl;
+        cout<< "7. Search for an element x in the doubly linked list and return its pointer "<<endl;
+        cout << "8. Concatenate two doubly linked lists" << endl;
+        cout << "Enter 0 to Exit " << endl;
+        cout << "Enter choice : ";
         cin >> choice;
         switch (choice)
         {
         case 1:
-            cout << "\nEnter Search Element: ";
-            cin >> ele;
-            if (list.search(ele) != nullptr)
-                cout << "Element " << ele << " found...\n";
-            else
-                cout << "Element not found or List is Empty...\n";
+            insertBeginning(head);
             break;
         case 2:
-            cout << "\nEnter Element: ";
-            cin >> info;
-            list.insertFront(info);
+            insertPosition(head);
             break;
         case 3:
-            cout << "\nEnter Element: ";
-            cin >> info;
-            list.insertBack(info);
+            insertEnd(head);
             break;
         case 4:
-            cout << "\nEnter Location: ";
-            cin >> loc;
-            cout << "Enter Element: ";
-            cin >> info;
-            list.insertAtLoc(loc, info);
+            deleteBeginning(head);
             break;
         case 5:
-            list.deleteFront();
+            deletePosition(head);
             break;
         case 6:
-            list.deleteBack();
+            deleteEnd(head);
             break;
         case 7:
-            cout << "\nEnter Location: ";
-            cin >> loc;
-            list.deleteAtLoc(loc);
-            break;
-        case 8:
-            list.display();
-            break;
-        case 9:
-            count = list.count();
-            if (count != -1)
-                cout << "\nNumber of Nodes: " << count << endl;
-            break;
-        case 10:
-            list.reverse();
-            break;
-        case 11:
-            if (!list2.isEmpty())
-            {
-                cout << "\nList B:";
-                list2.display();
-            }
-            cout << "\nNumber of Nodes to add in List B: ";
-            cin >> count;
-            if (count)
-            {
-                cout << "Enter Elements to List B: ";
-                for (int i = 0; i < count; i++)
-                {
-                    cin >> info;
-                    list2.insertBack(info);
-                }
-                list + list2;
-            }
-            break;
-        case 0:
-        default:
+        {
+            Node *ans = searchElement(head);
+            cout << "Element found at pointer ; " << ans << endl;
             break;
         }
-    } while (choice != 0);
+        case 8:
+        {
+            concatenate(head, list1);
+            break;
+        }
+        }
+    }
     return 0;
 }
